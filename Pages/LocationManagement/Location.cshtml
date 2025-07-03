@@ -1,44 +1,64 @@
 ﻿@page
 @model RFID2.Pages.LocationManagement.LocationModel
 @{
+    ViewData["Title"] = "Locations";
 }
+
 <h3>Location</h3>
-<div class="mb-3 text-end">
-    <button class="btn btn-primary" onclick="showLocationForm()">Add New Location</button>
-</div>
-<div id="locationForm" class="card p-3 d-none">
-    <label>Location Name *</label>
-    <input id="locationName" class="form-control mb-2" />
-    <div class="text-end">
-        <button class="btn btn-success" onclick="saveLocation()">Save</button>
-        <button class="btn btn-danger" onclick="hideLocationForm()">Cancel</button>
+
+<form method="post">
+    <div class="mb-3 text-end">
+        <button type="button" class="btn btn-primary" onclick="showLocationForm()">Add New Location</button>
     </div>
-</div>
-<table class="table table-bordered">
+    <br/>
+    <div id="locationForm" class="card p-3 d-none">
+        <label>Location Name *</label>
+        <input asp-for="LocationName" class="form-control mb-2" />
+        <div class="text-end">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-danger" onclick="hideLocationForm()">Cancel</button>
+        </div>
+    </div>
+</form>
+
+<table class="min-w-full divide-y divide-gray-200 table table-bordered dataTable mt-6">
     <thead class="table-light">
-        <tr><th>Location Name</th><th>Edit</th><th>Delete</th></tr>
+        <tr>
+            <th>Location Name</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        <tr>
+            <th><input type="text" placeholder="Search Name" /></th>
+            <th></th>
+            <th></th>
+        </tr>
     </thead>
-    <tbody id="locationTable"></tbody>
+    <tbody>
+        @foreach (var loc in Model.Locations)
+        {
+            <tr>
+                <td>@loc.LocationName</td>
+                <td><button class="btn btn-warning btn-sm">✏️</button></td>
+                <td><button class="btn btn-danger btn-sm">❌</button></td>
+            </tr>
+        }
+    </tbody>
 </table>
 
-<script>
-    const locations = ["TPO", "SPO", "SG1"];
-    function showLocationForm() { document.getElementById("locationForm").classList.remove("d-none"); }
-    function hideLocationForm() { document.getElementById("locationForm").classList.add("d-none"); }
-    function saveLocation() {
-        const name = document.getElementById("locationName").value.trim();
-        if (!name) return alert("Location required");
-        locations.push(name);
-        renderLocations();
-        hideLocationForm();
-        alert("Location saved");
-    }
-    function renderLocations() {
-        const tbody = document.getElementById("locationTable");
-        tbody.innerHTML = "";
-        locations.forEach(name => {
-            tbody.innerHTML += `<tr><td>${name}</td><td>✏️</td><td>❌</td></tr>`;
-        });
-    }
-    renderLocations();
-</script>
+@section Scripts {
+    <script>
+         function showLocationForm() { document.getElementById("locationForm").classList.remove("d-none"); }
+        function hideLocationForm() { document.getElementById("locationForm").classList.add("d-none"); }
+        function saveLocation() {
+            const name = document.getElementById("locationName").value.trim();
+            if (!name) return alert("Location required");
+            locations.push(name);
+            renderLocations();
+            hideLocationForm();
+            alert("Location saved");
+        }
+        </script>
+       
+    <partial name="_DataTableScript" />
+}

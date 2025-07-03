@@ -1,7 +1,11 @@
+using RFID2.Pages.Utils;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+DbConnection.Init(builder.Configuration);
 builder.Services.AddRazorPages();
+
 
 var app = builder.Build();
 
