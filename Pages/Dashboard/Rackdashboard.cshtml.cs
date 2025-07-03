@@ -1,0 +1,93 @@
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace RFID2.Pages.Dashboard
+{
+    public class RackdashboardModel : PageModel
+    {
+        public List<Floor> Floors { get; set; } = new List<Floor>
+        {
+            new Floor { Name = "Floor1", Racks = new List<string> { "Rack1 on Floor1", "Rack2 on Floor1", "Rack3 on Floor1", "Rack4 on Floor1" } },
+            new Floor { Name = "Floor2", Racks = new List<string>() },
+            new Floor { Name = "Floor3", Racks = new List<string>() },
+            new Floor { Name = "Floor4", Racks = new List<string>() },
+            new Floor { Name = "Floor5", Racks = new List<string>() },
+            new Floor { Name = "Floor6", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+            new Floor { Name = "Floor7", Racks = new List<string>() },
+        };
+
+        public class Floor
+        {
+            public string Name { get; set; }
+            public List<string> Racks { get; set; }
+        }
+    }
+}

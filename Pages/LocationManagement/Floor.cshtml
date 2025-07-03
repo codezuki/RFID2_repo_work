@@ -1,0 +1,56 @@
+﻿@page
+@model RFID2.Pages.LocationManagement.FloorModel
+@{
+}
+<h3>Floor</h3>
+<div class="mb-3 text-end">
+    <button class="btn btn-primary" onclick="showFloorForm()">Add New Floor</button>
+</div>
+<div id="floorForm" class="card p-3 d-none">
+    <label>Select Location *</label>
+    <select id="floorLocation" class="form-select mb-2"></select>
+    <label>Floor Name *</label>
+    <input id="floorName" class="form-control mb-2" />
+    <div class="text-end">
+        <button class="btn btn-success" onclick="saveFloor()">Save</button>
+        <button class="btn btn-danger" onclick="hideFloorForm()">Cancel</button>
+    </div>
+</div>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th>Floor Name</th><th>Location Name</th><th>Edit</th><th>Delete</th></tr>
+    </thead>
+    <tbody id="floorTable"></tbody>
+</table>
+
+<script>
+    const locations = ["TPO", "SPO", "SG1"];
+    const floors = [
+        { name: "TPO LEVEL 8", location: "TPO" },
+        { name: "SPO LEVEL 50", location: "SPO" }
+    ];
+    function showFloorForm() {
+        const ddl = document.getElementById("floorLocation");
+        ddl.innerHTML = "<option value=''>Select</option>";
+        locations.forEach(loc => ddl.innerHTML += `<option value='${loc}'>${loc}</option>`);
+        document.getElementById("floorForm").classList.remove("d-none");
+    }
+    function hideFloorForm() { document.getElementById("floorForm").classList.add("d-none"); }
+    function saveFloor() {
+        const location = document.getElementById("floorLocation").value;
+        const name = document.getElementById("floorName").value.trim();
+        if (!location || !name) return alert("Required fields missing");
+        floors.push({ name, location });
+        renderFloors();
+        hideFloorForm();
+        alert("Floor saved");
+    }
+    function renderFloors() {
+        const tbody = document.getElementById("floorTable");
+        tbody.innerHTML = "";
+        floors.forEach(f => {
+            tbody.innerHTML += `<tr><td>${f.name}</td><td>${f.location}</td><td>✏️</td><td>❌</td></tr>`;
+        });
+    }
+    renderFloors();
+</script>

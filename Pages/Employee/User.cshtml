@@ -1,0 +1,217 @@
+﻿@page
+@model RFID2.Pages.Employee.UserModel
+@{
+}
+<!-- UserManagement.cshtml -->
+<div class="container mt-4">
+    <!-- User List View -->
+    <div id="userListView">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold">User Details</h5>
+            <button class="btn btn-primary btn-sm" onclick="openAddUserForm()">Add New User</button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>NTID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+        <div id="noUserMessage" class="text-center text-muted" style="display:none;">No users found. Click "Add New User" to get started.</div>
+    </div>
+
+    <!-- User Form View -->
+    <div id="userFormView" style="display:none">
+        <div class="card">
+            <div class="card-header"><h5>New User</h5></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">NTID *</label>
+                        <select class="form-select" id="ntidDropdown" onchange="fillEmployeeDetails()"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" id="department" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Role *</label>
+                        <select class="form-select" id="roleDropdown"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusDropdown">
+                            <option value="Active">Active</option>
+                            <option value="Revoked">Revoked</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-end">
+                    <button class="btn btn-success me-2" onclick="saveUser()">Save</button>
+                    <button class="btn btn-secondary" onclick="cancelUserForm()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let employees = [
+        { ntid: "kumarkun", firstName: "Kumar", lastName: "Kun", department: "Tech Group" },
+        { ntid: "teodoro3", firstName: "Teo", lastName: "Doro", department: "Infra" },
+        { ntid: "binhasaw", firstName: "Bin", lastName: "Hasaw", department: "HR" }
+    ];
+
+    let roles = ["Server Module Users", "Server Module Admin", "User Management Admin"];
+
+    let users = [];
+    let editIndex = -1;
+
+    function loadInitialData() {
+        const ntidDropdown = document.getElementById("ntidDropdown");
+        ntidDropdown.innerHTML = '<option value="">Select</option>';
+        employees.forEach(e => {
+            ntidDropdown.innerHTML += `<option value="${e.ntid}">${e.ntid}</option>`;
+        });
+
+        const roleDropdown = document.getElementById("roleDropdown");
+        roleDropdown.innerHTML = '<option value="">Select</option>';
+        roles.forEach(r => {
+            roleDropdown.innerHTML += `<option value="${r}">${r}</option>`;
+        });
+
+        renderUserTable();
+    }
+
+    function renderUserTable() {
+        const body = document.getElementById("userTableBody");
+        const noUserMsg = document.getElementById("noUserMessage");
+        body.innerHTML = "";
+        if (users.length === 0) {
+            noUserMsg.style.display = "block";
+            return;
+        }
+        noUserMsg.style.display = "none";
+        users.forEach((u, index) => {
+            body.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${u.ntid}</td>
+                        <td>${u.firstName}</td>
+                        <td>${u.lastName}</td>
+                        <td>${u.department}</td>
+                        <td>${u.role}</td>
+                        <td>${u.status}</td>
+                        <td><button class='btn btn-sm btn-info' onclick='editUser(${index})'>✎</button></td>
+                        <td><button class='btn btn-sm btn-danger' onclick='deleteUser(${index})'>✖</button></td>
+                    </tr>`;
+        });
+    }
+
+    function openAddUserForm() {
+        editIndex = -1;
+        document.getElementById("userListView").style.display = "none";
+        document.getElementById("userFormView").style.display = "block";
+        document.getElementById("ntidDropdown").value = "";
+        document.getElementById("firstName").value = "";
+        document.getElementById("lastName").value = "";
+        document.getElementById("department").value = "";
+        document.getElementById("roleDropdown").value = "";
+        document.getElementById("statusDropdown").value = "Active";
+    }
+
+    function cancelUserForm() {
+        document.getElementById("userListView").style.display = "block";
+        document.getElementById("userFormView").style.display = "none";
+    }
+
+    function fillEmployeeDetails() {
+        const ntid = document.getElementById("ntidDropdown").value;
+        const emp = employees.find(e => e.ntid === ntid);
+        if (emp) {
+            document.getElementById("firstName").value = emp.firstName;
+            document.getElementById("lastName").value = emp.lastName;
+            document.getElementById("department").value = emp.department;
+        }
+    }
+
+    function saveUser() {
+        const ntid = document.getElementById("ntidDropdown").value;
+        const role = document.getElementById("roleDropdown").value;
+        const status = document.getElementById("statusDropdown").value;
+
+        if (!ntid || !role) {
+            showToast("Please fill required fields.", true);
+            return;
+        }
+        const emp = employees.find(e => e.ntid === ntid);
+        const user = {
+            ntid,
+            firstName: emp.firstName,
+            lastName: emp.lastName,
+            department: emp.department,
+            role,
+            status
+        };
+
+        if (editIndex > -1) {
+            users[editIndex] = user;
+            showToast("User updated successfully.");
+        } else {
+            users.push(user);
+            showToast("User added successfully.");
+        }
+
+        cancelUserForm();
+        renderUserTable();
+    }
+
+    function editUser(index) {
+        const u = users[index];
+        editIndex = index;
+        document.getElementById("ntidDropdown").value = u.ntid;
+        fillEmployeeDetails();
+        document.getElementById("roleDropdown").value = u.role;
+        document.getElementById("statusDropdown").value = u.status;
+        document.getElementById("userListView").style.display = "none";
+        document.getElementById("userFormView").style.display = "block";
+    }
+
+    function deleteUser(index) {
+        users.splice(index, 1);
+        renderUserTable();
+        showToast("User deleted.");
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.createElement("div");
+        toast.className = `toast align-items-center text-white ${isError ? 'bg-danger' : 'bg-success'} border-0 position-fixed bottom-0 end-0 m-4`;
+        toast.role = "alert";
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        document.body.appendChild(toast);
+        new bootstrap.Toast(toast).show();
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", loadInitialData);
+</script>
+

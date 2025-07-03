@@ -1,0 +1,170 @@
+﻿@page
+@model RFID2.Pages.Employee.EmployeeModel
+@{
+    ViewData["Title"] = "Employee Management";
+}
+
+
+<h3>Employee Management</h3>
+<div class="text-end mb-3">
+    <button class="btn btn-primary" onclick="showForm()">Add New Employee</button>
+</div>
+
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<div id="employeeForm" class="card p-3 d-none">
+    <div class="row">
+        <div class="col-md-3">
+            <label>NTID *</label>
+            <input id="ntid" class="form-control mb-2" />
+        </div>
+        <div class="col-md-3">
+            <label>First Name *</label>
+            <input id="firstName" class="form-control mb-2" />
+        </div>
+        <div class="col-md-3">
+            <label>Last Name *</label>
+            <input id="lastName" class="form-control mb-2" />
+        </div>
+        <div class="col-md-3">
+            <label>Department *</label>
+            <select id="department" class="form-select mb-2">
+                <option value="">Select</option>
+                <option>Technology Group</option>
+                <option>Workplace Management</option>
+                <option>Operations</option>
+            </select>
+        </div>
+    </div>
+    <label>Remarks *</label>
+    <input id="remarks" class="form-control mb-3" />
+    <div class="text-end">
+        <button class="btn btn-success me-2" onclick="saveEmployee()">Save</button>
+        <button class="btn btn-danger" onclick="hideForm()">Cancel</button>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>NTID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Department</th>
+            <th>Remarks</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody id="employeeTable"></tbody>
+</table>
+
+<div id="toast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div class="toast align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="hideToast()"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+let employees = [
+    { ntid: "kumarkun", firstName: "Kumar", lastName: "K", department: "Technology Group", remarks: "Senior Dev" },
+    { ntid: "sivatehejay", firstName: "Siva", lastName: "T", department: "Workplace Management", remarks: "Dummy Data" },
+];
+let editingIndex = -1;
+
+function renderTable() {
+    const tbody = document.getElementById("employeeTable");
+    tbody.innerHTML = "";
+    employees.forEach((e, i) => {
+        tbody.innerHTML += `<tr>
+            <td>${i + 1}</td>
+            <td>${e.ntid}</td>
+            <td>${e.firstName}</td>
+            <td>${e.lastName}</td>
+            <td>${e.department}</td>
+            <td>${e.remarks}</td>
+            <td><button class='btn btn-sm btn-outline-primary' onclick='editEmployee(${i})'>✏️</button></td>
+            <td><button class='btn btn-sm btn-outline-danger' onclick='deleteEmployee(${i})'>❌</button></td>
+        </tr>`;
+    });
+}
+
+function showForm() {
+    document.getElementById("employeeForm").classList.remove("d-none");
+    editingIndex = -1;
+    clearForm();
+}
+
+function hideForm() {
+    document.getElementById("employeeForm").classList.add("d-none");
+    clearForm();
+}
+
+function clearForm() {
+    ["ntid", "firstName", "lastName", "department", "remarks"].forEach(id => document.getElementById(id).value = "");
+}
+
+function saveEmployee() {
+    const ntid = document.getElementById("ntid").value.trim();
+    const firstName = document.getElementById("firstName").value.trim();
+    const lastName = document.getElementById("lastName").value.trim();
+    const department = document.getElementById("department").value;
+    const remarks = document.getElementById("remarks").value.trim();
+    if (!ntid || !firstName || !lastName || !department || !remarks) return alert("All fields required");
+
+    const emp = { ntid, firstName, lastName, department, remarks };
+    if (editingIndex === -1) {
+        employees.push(emp);
+        showToast("Employee added","success");
+    } else {
+        employees[editingIndex] = emp;
+        showToast("Employee updated","success");
+    }
+    renderTable();
+    hideForm();
+}
+
+function editEmployee(index) {
+    const e = employees[index];
+    ["ntid", "firstName", "lastName", "department", "remarks"].forEach(id => document.getElementById(id).value = e[id]);
+    editingIndex = index;
+    showForm();
+}
+
+function deleteEmployee(index) {
+    if (confirm("Delete this employee?")) {
+        employees.splice(index, 1);
+        renderTable();
+        showToast("Employee deleted","success");
+    }
+}
+
+// function showToast(msg) {
+//     const toast = document.getElementById("toast");
+//     document.getElementById("toastMessage").innerText = msg;
+//     toast.querySelector(".toast").classList.add("show");
+//     setTimeout(() => hideToast(), 2500);
+// }
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-bg-${type} border-0 show mb-2`;
+        toast.role = 'alert';
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+function hideToast() {
+    document.querySelector("#toast .toast").classList.remove("show");
+}
+
+renderTable();
+</script>

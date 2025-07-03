@@ -1,0 +1,44 @@
+﻿@page
+@model RFID2.Pages.LocationManagement.LocationModel
+@{
+}
+<h3>Location</h3>
+<div class="mb-3 text-end">
+    <button class="btn btn-primary" onclick="showLocationForm()">Add New Location</button>
+</div>
+<div id="locationForm" class="card p-3 d-none">
+    <label>Location Name *</label>
+    <input id="locationName" class="form-control mb-2" />
+    <div class="text-end">
+        <button class="btn btn-success" onclick="saveLocation()">Save</button>
+        <button class="btn btn-danger" onclick="hideLocationForm()">Cancel</button>
+    </div>
+</div>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th>Location Name</th><th>Edit</th><th>Delete</th></tr>
+    </thead>
+    <tbody id="locationTable"></tbody>
+</table>
+
+<script>
+    const locations = ["TPO", "SPO", "SG1"];
+    function showLocationForm() { document.getElementById("locationForm").classList.remove("d-none"); }
+    function hideLocationForm() { document.getElementById("locationForm").classList.add("d-none"); }
+    function saveLocation() {
+        const name = document.getElementById("locationName").value.trim();
+        if (!name) return alert("Location required");
+        locations.push(name);
+        renderLocations();
+        hideLocationForm();
+        alert("Location saved");
+    }
+    function renderLocations() {
+        const tbody = document.getElementById("locationTable");
+        tbody.innerHTML = "";
+        locations.forEach(name => {
+            tbody.innerHTML += `<tr><td>${name}</td><td>✏️</td><td>❌</td></tr>`;
+        });
+    }
+    renderLocations();
+</script>

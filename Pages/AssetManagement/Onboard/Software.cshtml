@@ -1,0 +1,175 @@
+﻿@page
+@model RFID2.Pages.AssetManagement.Onboard.SoftwareModel
+@{
+    ViewData["Title"] = "Software Asset Onboarding";
+}
+
+<h2 class="mb-4">🧩 Software Asset Onboarding</h2>
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999"></div>
+
+<!-- Add Button -->
+<div id="addAssetBtnWrapper" class="mb-3">
+    <button class="btn btn-primary" onclick="showAddForm()">+ Add Onboard Asset</button>
+</div>
+
+<!-- Asset Form -->
+<div id="assetFormSection" class="card p-4 shadow-sm bg-body-tertiary text-body d-none">
+    <h5 id="formTitle" class="fw-bold mb-3">Add Software Asset</h5>
+    <form id="assetForm" onsubmit="saveAsset(event)">
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Asset ID</label><input class="form-control" id="assetId" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Asset Class</label><select class="form-select" id="assetClass"><option>Software</option></select></div>
+            <div class="col-md-3"><label class="form-label">Serial No</label><input class="form-control" id="serialNo" /></div>
+            <div class="col-md-3"><label class="form-label">DCMC No</label><input class="form-control" id="dcmcNo" /></div>
+            <div class="col-md-3"><label class="form-label">Asset Type</label><select class="form-select" id="assetType"><option>License</option><option>Subscription</option></select></div>
+            <div class="col-md-3"><label class="form-label">Model</label><select class="form-select" id="model"><option>Dell</option><option>HP</option></select></div>
+            <div class="col-md-3"><label class="form-label">Description</label><input class="form-control" id="description" /></div>
+            <div class="col-md-3"><label class="form-label">Project Code</label><input class="form-control" id="projectCode" /></div>
+            <div class="col-md-3"><label class="form-label">Financial Year</label><input class="form-control" id="finYear" /></div>
+            <div class="col-md-3"><label class="form-label">PO No</label><input class="form-control" id="poNo" /></div>
+            <div class="col-md-3"><label class="form-label">PO Date</label><input type="date" class="form-control" id="poDate" /></div>
+            <div class="col-md-3"><label class="form-label">Asset Cost</label><input type="number" class="form-control" id="assetCost" /></div>
+            <div class="col-md-3"><label class="form-label">Department</label><select class="form-select" id="department"><option>IT</option><option>HR</option></select></div>
+            <div class="col-md-3"><label class="form-label">Custodian</label><select class="form-select" id="custodian"><option>John</option><option>Jane</option></select></div>
+            <div class="col-md-3"><label class="form-label">Location</label><select class="form-select" id="location"><option>Chennai</option><option>Bangalore</option></select></div>
+            <div class="col-md-3"><label class="form-label">Floor</label><select class="form-select" id="floor"><option>1</option><option>2</option></select></div>
+            <div class="col-md-3"><label class="form-label">Rack</label><select class="form-select" id="rack"><option>Rack A</option><option>Rack B</option></select></div>
+            <div class="col-md-3"><label class="form-label">Deployment Date</label><input type="date" class="form-control" id="deployDate" /></div>
+            <div class="col-md-3"><label class="form-label">Asset Tag</label><input class="form-control" id="assetTag" /></div>
+            <div class="col-md-3"><label class="form-label">Status</label><select class="form-select" id="status"><option>Draft</option><option>Submitted</option><option>Approved</option></select></div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelForm()">Cancel</button>
+        </div>
+
+        <div id="timelineSection" class="mt-5 d-none">
+            <h6 class="fw-bold">Timeline</h6>
+            <ul class="timeline list-unstyled border-start ps-3" id="timelineList"></ul>
+        </div>
+    </form>
+</div>
+
+<!-- Grid -->
+<div id="assetGridSection" class="card p-4 shadow-sm bg-body-tertiary text-body">
+    <h5 class="fw-bold mb-3">Onboarded Software Assets</h5>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Asset ID</th>
+                <th>Type</th>
+                <th>Model</th>
+                <th>Custodian</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="assetTableBody">
+            <tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let editingIndex = null;
+    let assets = [];
+
+    function showAddForm() {
+        editingIndex = null;
+        document.getElementById('formTitle').innerText = 'Add Software Asset';
+        document.getElementById('assetForm').reset();
+        document.getElementById('assetId').value = `SW${Date.now()}`;
+        document.getElementById('assetFormSection').classList.remove('d-none');
+        document.getElementById('assetGridSection').classList.add('d-none');
+        document.getElementById('addAssetBtnWrapper').classList.add('d-none');
+        document.getElementById('timelineSection').classList.add('d-none');
+    }
+
+    function cancelForm() {
+        document.getElementById('assetFormSection').classList.add('d-none');
+        document.getElementById('assetGridSection').classList.remove('d-none');
+        document.getElementById('addAssetBtnWrapper').classList.remove('d-none');
+    }
+
+    function saveAsset(e) {
+        e.preventDefault();
+        const asset = {
+            id: document.getElementById('assetId').value,
+            type: document.getElementById('assetType').value,
+            model: document.getElementById('model').value,
+            custodian: document.getElementById('custodian').value,
+            status: document.getElementById('status').value,
+            timeline: [`${new Date().toLocaleString()} - ${editingIndex === null ? 'Created' : 'Updated'} by Admin`]
+        };
+
+        if (editingIndex !== null) {
+            assets[editingIndex].type = asset.type;
+            assets[editingIndex].model = asset.model;
+            assets[editingIndex].custodian = asset.custodian;
+            assets[editingIndex].status = asset.status;
+            assets[editingIndex].timeline.push(asset.timeline[0]);
+        } else {
+            assets.push(asset);
+        }
+        showToast('Saved successfully');
+        renderTable();
+        cancelForm();
+    }
+
+    function editAsset(index) {
+        const asset = assets[index];
+        editingIndex = index;
+        document.getElementById('formTitle').innerText = 'Edit Software Asset';
+        document.getElementById('assetId').value = asset.id;
+        document.getElementById('assetType').value = asset.type;
+        document.getElementById('model').value = asset.model;
+        document.getElementById('custodian').value = asset.custodian;
+        document.getElementById('status').value = asset.status;
+
+        const timelineHtml = asset.timeline.map(t => `<li>${t}</li>`).join('');
+        document.getElementById('timelineList').innerHTML = timelineHtml;
+        document.getElementById('timelineSection').classList.remove('d-none');
+
+        document.getElementById('assetFormSection').classList.remove('d-none');
+        document.getElementById('assetGridSection').classList.add('d-none');
+        document.getElementById('addAssetBtnWrapper').classList.add('d-none');
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('assetTableBody');
+        tbody.innerHTML = '';
+        if (assets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>';
+            return;
+        }
+
+        assets.forEach((a, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${a.id}</td><td>${a.type}</td><td>${a.model}</td><td>${a.custodian}</td><td>${a.status}</td><td><button class='btn btn-sm btn-primary' onclick='editAsset(${i})'>Edit</button></td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-bg-success border-0 show';
+        toast.role = 'alert';
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+
+<style>
+    .timeline {
+        border-left: 3px solid var(--bs-border-color);
+        margin-left: 1rem;
+        padding-left: 1rem;
+    }
+
+        .timeline li {
+            margin-bottom: 0.75rem;
+        }
+</style>

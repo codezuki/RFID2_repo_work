@@ -1,0 +1,267 @@
+﻿@page
+@model RFID2.Pages.AssetManagement.DisposalModel
+@{
+    ViewData["Title"] = "Asset Disposal";
+}
+
+<h2 class="mb-4">🚮 Asset Disposal</h2>
+
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999"></div>
+
+<!-- Action Buttons -->
+<div class="mb-3 d-flex gap-2">
+    <button class="btn btn-primary" onclick="startNewDisposal()">New Disposal ID</button>
+    <button class="btn btn-secondary" onclick="startExistingDisposal()">Existing Disposal ID</button>
+</div>
+
+<!-- Disposal Form -->
+<div id="disposalFormSection" class="card p-4 shadow-sm d-none">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Disposal ID</label>
+            <input id="disposalId" class="form-control" readonly />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Disposal Remark</label>
+            <input id="disposalRemark" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Asset ID</label>
+            <input id="assetSearch" class="form-control" placeholder="Search by Asset ID...">
+        </div>
+    </div>
+    <button class="btn btn-success mb-3" onclick="addAssetToDisposal()">Add Asset</button>
+
+    <!-- Disposal Asset List Grid -->
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Asset ID</th>
+                <th>Description</th>
+                <th>Asset Class</th>
+                <th>Location</th>
+                <th>PO No</th>
+                <th>Dispose</th>
+            </tr>
+        </thead>
+        <tbody id="disposalAssetsTable"></tbody>
+    </table>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-info" onclick="saveDisposal()">Save Disposal</button>
+        <button class="btn btn-outline-secondary" onclick="cancelDisposal()">Cancel</button>
+    </div>
+</div>
+
+<!-- Disposal History Grid -->
+<div id="disposalHistorySection" class="card p-4 shadow-sm">
+    <h5 class="fw-bold mb-3">Disposed Assets</h5>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Disposal ID</th>
+                <th>Status</th>
+                <th>Dispose Time</th>
+                <th>Remarks</th>
+                <th>Disposed By</th>
+                <th>Edit</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody id="disposalHistoryBody"></tbody>
+    </table>
+</div>
+
+<!-- Modal for Disposal Details -->
+<div class="modal fade" id="disposalDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Disposal ID: <span id="modalDisposalId"></span> |
+                    Total Assets: <span id="modalAssetCount"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Description</th>
+                            <th>Class</th>
+                            <th>Location</th>
+                            <th>PO No</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalDisposalAssetsTable"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="disposeAllAssets()">Dispose All</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allAssets = [
+        { id: "A101", desc: "Laptop", class: "Hardware", location: "Chennai", po: "PO001" },
+        { id: "A102", desc: "Office 365", class: "Software", location: "Remote", po: "PO002" },
+        { id: "A103", desc: "Switch", class: "Hardware", location: "Bangalore", po: "PO003" }
+    ];
+
+    let disposalList = [];
+    let activeDisposal = null;
+
+    function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-bg-success border-0 show';
+        toast.role = 'alert';
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function startNewDisposal() {
+        activeDisposal = { id: "D" + (Math.floor(Math.random() * 1000) + 100), assets: [], by: "admin", status: "To be Disposed", remarks: "", time: new Date().toLocaleString() };
+        document.getElementById("disposalId").value = activeDisposal.id;
+        document.getElementById("disposalRemark").value = "";
+        document.getElementById("disposalAssetsTable").innerHTML = "";
+        document.getElementById("disposalFormSection").classList.remove("d-none");
+        document.getElementById("disposalHistorySection").classList.add("d-none");
+    }
+
+    function startExistingDisposal() {
+        if (disposalList.length === 0) {
+            showToast("No disposal records found.");
+            return;
+        }
+        activeDisposal = disposalList[0];
+        document.getElementById("disposalId").value = activeDisposal.id;
+        document.getElementById("disposalRemark").value = activeDisposal.remarks;
+        loadAssetsToGrid();
+        document.getElementById("disposalFormSection").classList.remove("d-none");
+        document.getElementById("disposalHistorySection").classList.add("d-none");
+    }
+
+    function addAssetToDisposal() {
+        const assetId = document.getElementById("assetSearch").value.trim();
+        if (!assetId) return;
+        const asset = allAssets.find(a => a.id === assetId);
+        if (!asset) return showToast("Asset not found");
+        if (activeDisposal.assets.find(a => a.id === asset.id)) return showToast("Duplicate asset");
+        activeDisposal.assets.push({ ...asset, status: "Pending" });
+        loadAssetsToGrid();
+        document.getElementById("assetSearch").value = "";
+    }
+
+    function loadAssetsToGrid() {
+        const tbody = document.getElementById("disposalAssetsTable");
+        tbody.innerHTML = "";
+        activeDisposal.assets.forEach(asset => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${asset.id}</td>
+                <td>${asset.desc}</td>
+                <td>${asset.class}</td>
+                <td>${asset.location}</td>
+                <td>${asset.po}</td>
+                <td><button class='btn btn-sm btn-danger' onclick='removeAsset("${asset.id}")'>Remove</button></td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    function removeAsset(id) {
+        activeDisposal.assets = activeDisposal.assets.filter(a => a.id !== id);
+        loadAssetsToGrid();
+    }
+
+    function saveDisposal() {
+        activeDisposal.remarks = document.getElementById("disposalRemark").value;
+        if (!activeDisposal.assets.length) return showToast("No assets to dispose");
+        if (!disposalList.find(d => d.id === activeDisposal.id)) {
+            disposalList.push(activeDisposal);
+        }
+        renderDisposalHistory();
+        cancelDisposal();
+        showToast("Disposal saved successfully.");
+    }
+
+    function cancelDisposal() {
+        document.getElementById("disposalFormSection").classList.add("d-none");
+        document.getElementById("disposalHistorySection").classList.remove("d-none");
+        activeDisposal = null;
+    }
+
+    function renderDisposalHistory() {
+        const tbody = document.getElementById("disposalHistoryBody");
+        tbody.innerHTML = "";
+        disposalList.forEach(d => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${d.id}</td>
+                <td>${d.status}</td>
+                <td>${d.time}</td>
+                <td>${d.remarks}</td>
+                <td>${d.by}</td>
+                <td><button class='btn btn-sm btn-outline-primary' onclick='startExistingDisposal()'>Edit</button></td>
+                <td><button class='btn btn-sm btn-outline-info' onclick='viewDisposal("${d.id}")'>👁</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function viewDisposal(id) {
+        const d = disposalList.find(x => x.id === id);
+        if (!d) return;
+        document.getElementById("modalDisposalId").innerText = d.id;
+        document.getElementById("modalAssetCount").innerText = d.assets.length;
+        const tbody = document.getElementById("modalDisposalAssetsTable");
+        tbody.innerHTML = "";
+        d.assets.forEach(asset => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${asset.id}</td>
+                <td>${asset.desc}</td>
+                <td>${asset.class}</td>
+                <td>${asset.location}</td>
+                <td>${asset.po}</td>
+                <td>${asset.status}</td>
+                <td><button class='btn btn-sm btn-danger' onclick='disposeAsset("${d.id}", "${asset.id}")'>Dispose</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+        new bootstrap.Modal(document.getElementById("disposalDetailsModal")).show();
+    }
+
+    function disposeAsset(disposalId, assetId) {
+        const disposal = disposalList.find(d => d.id === disposalId);
+        const asset = disposal?.assets.find(a => a.id === assetId);
+        if (asset) {
+            asset.status = "Disposed";
+            viewDisposal(disposalId);
+            showToast(`Asset ${assetId} marked as disposed.`);
+        }
+    }
+
+    function disposeAllAssets() {
+        const disposalId = document.getElementById("modalDisposalId").innerText;
+        const disposal = disposalList.find(d => d.id === disposalId);
+        if (disposal) {
+            disposal.assets.forEach(a => a.status = "Disposed");
+            viewDisposal(disposalId);
+            showToast("All assets marked as disposed.");
+        }
+    }
+</script>
+<script>
+    document.addEventListener('hidden.bs.modal', () => {
+        document.body.classList.remove('modal-open');
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    });
+</script>

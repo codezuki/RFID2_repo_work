@@ -1,0 +1,69 @@
+﻿@page
+@model RFID2.Pages.LocationManagement.RackModel
+@{
+}
+<h3>Rack</h3>
+<div class="mb-3 text-end">
+    <button class="btn btn-primary" onclick="showRackForm()">Add Rack</button>
+</div>
+<div id="rackForm" class="card p-3 d-none">
+    <label>Select Location *</label>
+    <select id="rackLocation" class="form-select mb-2" onchange="populateFloorsForRack()"></select>
+    <label>Select Floor *</label>
+    <select id="rackFloor" class="form-select mb-2"></select>
+    <label>Rack Name *</label>
+    <input id="rackName" class="form-control mb-2" />
+    <div class="text-end">
+        <button class="btn btn-success" onclick="saveRack()">Save</button>
+        <button class="btn btn-danger" onclick="hideRackForm()">Cancel</button>
+    </div>
+</div>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th>Rack Name</th><th>Location</th><th>Floor</th><th>Edit</th><th>Delete</th></tr>
+    </thead>
+    <tbody id="rackTable"></tbody>
+</table>
+
+<script>
+    const locations = ["TPO", "SPO", "SG1"];
+    const floors = [
+        { name: "TPO LEVEL 8", location: "TPO" },
+        { name: "SPO LEVEL 50", location: "SPO" }
+    ];
+    const racks = [
+        { name: "R11-04-KDC", location: "TPO", floor: "TPO LEVEL 8" }
+    ];
+    function showRackForm() {
+        const locDDL = document.getElementById("rackLocation");
+        locDDL.innerHTML = "<option value=''>Select</option>";
+        locations.forEach(loc => locDDL.innerHTML += `<option value='${loc}'>${loc}</option>`);
+        populateFloorsForRack();
+        document.getElementById("rackForm").classList.remove("d-none");
+    }
+    function hideRackForm() { document.getElementById("rackForm").classList.add("d-none"); }
+    function populateFloorsForRack() {
+        const location = document.getElementById("rackLocation").value;
+        const ddl = document.getElementById("rackFloor");
+        ddl.innerHTML = "<option value=''>Select</option>";
+        floors.filter(f => f.location === location).forEach(f => ddl.innerHTML += `<option value='${f.name}'>${f.name}</option>`);
+    }
+    function saveRack() {
+        const location = document.getElementById("rackLocation").value;
+        const floor = document.getElementById("rackFloor").value;
+        const name = document.getElementById("rackName").value.trim();
+        if (!location || !floor || !name) return alert("Required fields missing");
+        racks.push({ name, location, floor });
+        renderRacks();
+        hideRackForm();
+        alert("Rack saved");
+    }
+    function renderRacks() {
+        const tbody = document.getElementById("rackTable");
+        tbody.innerHTML = "";
+        racks.forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.location}</td><td>${r.floor}</td><td>✏️</td><td>❌</td></tr>`;
+        });
+    }
+    renderRacks();
+</script>

@@ -1,0 +1,195 @@
+﻿@page
+@model RFID2.Pages.AssetManagement.Offboard.HardwareModel
+@{
+}
+<h2 class="mb-4">🚪 Hardware Asset Offboarding</h2>
+
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999"></div>
+
+<!-- Offboard Button -->
+<div id="offboardBtnWrapper" class="mb-3">
+    <button class="btn btn-danger" onclick="showOffboardForm()">+ Offboard Asset</button>
+</div>
+
+<!-- Offboard Form -->
+<div id="offboardFormSection" class="card p-4 shadow-sm bg-body-tertiary text-body d-none">
+    <h5 id="formTitle" class="fw-bold mb-3">Offboard Asset</h5>
+    <form id="offboardForm" onsubmit="saveOffboard(event)">
+        <!-- Asset ID Lookup -->
+        <div class="mb-3 col-md-4">
+            <label class="form-label fw-bold">Asset ID <span class="text-danger">*</span></label>
+            <select class="form-select" id="assetId" onchange="loadAssetDetails()">
+                <option value="">Select...</option>
+                <option value="TD2512959">TD2512959</option>
+            </select>
+        </div>
+
+        <!-- Asset Fields (Read-only) -->
+        <div id="assetDetailsSection" class="row g-3 mb-4 d-none">
+            <!-- All asset fields -->
+            <div class="col-md-3"><label class="form-label">Asset Class</label><input class="form-control" id="assetClass" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Serial No</label><input class="form-control" id="serialNo" disabled /></div>
+            <div class="col-md-3"><label class="form-label">DCMC No</label><input class="form-control" id="dcmcNo" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Asset Type</label><input class="form-control" id="assetType" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Model</label><input class="form-control" id="model" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Description</label><input class="form-control" id="description" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Project Code</label><input class="form-control" id="projectCode" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Financial Year</label><input class="form-control" id="finYear" disabled /></div>
+            <div class="col-md-3"><label class="form-label">PO No</label><input class="form-control" id="poNo" disabled /></div>
+            <div class="col-md-3"><label class="form-label">PO Date</label><input type="date" class="form-control" id="poDate" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Asset Cost</label><input type="number" class="form-control" id="assetCost" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Department</label><input class="form-control" id="department" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Custodian</label><input class="form-control" id="custodian" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Location</label><input class="form-control" id="location" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Floor</label><input class="form-control" id="floor" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Rack</label><input class="form-control" id="rack" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Deployment Date</label><input type="date" class="form-control" id="deployDate" disabled /></div>
+            <div class="col-md-3"><label class="form-label">Asset Tag</label><input class="form-control" id="assetTag" disabled /></div>
+        </div>
+
+        <!-- Offboarding Fields -->
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Status</label>
+                <select class="form-select" id="status">
+                    <option>Draft</option>
+                    <option>Submitted</option>
+                    <option>Approved</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Reason for Offboarding</label>
+                <input class="form-control" id="reason" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Offboard Date</label>
+                <input type="date" class="form-control" id="offboardDate" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Approved By</label>
+                <input class="form-control" id="approvedBy" />
+            </div>
+            <div class="col-md-8">
+                <label class="form-label fw-bold">Remarks</label>
+                <textarea class="form-control" id="remarks"></textarea>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-4 d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelOffboard()">Cancel</button>
+        </div>
+
+        <!-- Timeline -->
+        <div id="timelineSection" class="mt-5 d-none">
+            <h6 class="fw-bold">Timeline</h6>
+            <ul class="timeline list-unstyled border-start ps-3">
+                <li><small class="text-muted">2024-06-01 09:00AM</small><br />Offboard request submitted</li>
+                <li><small class="text-muted">2024-06-02 10:15AM</small><br />Reviewed by Admin</li>
+            </ul>
+        </div>
+    </form>
+</div>
+
+<!-- Offboarded Assets Grid -->
+<div id="offboardedGridSection" class="card p-4 shadow-sm bg-body-tertiary text-body">
+    <h5 class="fw-bold mb-3">Offboarded Assets</h5>
+    <table id="offboardedTable" class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Asset ID</th>
+                <th>Serial No</th>
+                <th>Status</th>
+                <th>Approved By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="offboardedTableBody">
+            <tr><td colspan="5" class="text-center text-muted">No records found.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let editing = false;
+
+    function showOffboardForm() {
+        editing = false;
+        document.getElementById('formTitle').innerText = 'Offboard Asset';
+        document.getElementById('offboardFormSection').classList.remove('d-none');
+        document.getElementById('offboardedGridSection').classList.add('d-none');
+        document.getElementById('offboardBtnWrapper').classList.add('d-none');
+        document.getElementById('timelineSection').classList.add('d-none');
+        document.getElementById('offboardForm').reset();
+        document.getElementById('assetDetailsSection').classList.add('d-none');
+    }
+
+    function cancelOffboard() {
+        document.getElementById('offboardFormSection').classList.add('d-none');
+        document.getElementById('offboardedGridSection').classList.remove('d-none');
+        document.getElementById('offboardBtnWrapper').classList.remove('d-none');
+    }
+
+    function loadAssetDetails() {
+        // Mock load – fill read-only fields
+        document.getElementById('assetDetailsSection').classList.remove('d-none');
+        document.getElementById('serialNo').value = 'SN12345';
+        document.getElementById('model').value = 'Office 365';
+        document.getElementById('custodian').value = 'John Doe';
+        // Add more fields as needed...
+    }
+
+    function saveOffboard(e) {
+        e.preventDefault();
+
+        const tbody = document.getElementById('offboardedTableBody');
+        tbody.innerHTML = '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+                <td>TD2512959</td>
+                <td>SN12345</td>
+                <td>${document.getElementById('status').value}</td>
+                <td>${document.getElementById('approvedBy').value}</td>
+                <td><button class="btn btn-sm btn-outline-primary" onclick="editOffboard()">Edit</button></td>
+            `;
+        tbody.appendChild(tr);
+
+        showToast('Asset offboarded successfully.');
+        cancelOffboard();
+    }
+
+    function editOffboard() {
+        editing = true;
+        document.getElementById('formTitle').innerText = 'Edit Offboarded Asset';
+        document.getElementById('offboardFormSection').classList.remove('d-none');
+        document.getElementById('offboardedGridSection').classList.add('d-none');
+        document.getElementById('offboardBtnWrapper').classList.add('d-none');
+        document.getElementById('timelineSection').classList.remove('d-none');
+        document.getElementById('assetDetailsSection').classList.remove('d-none');
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-bg-success border-0 show';
+        toast.role = 'alert';
+        toast.ariaLive = 'assertive';
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+
+<style>
+    .timeline {
+        border-left: 3px solid var(--bs-border-color);
+        margin-left: 1rem;
+        padding-left: 1rem;
+    }
+
+        .timeline li {
+            margin-bottom: 0.75rem;
+        }
+</style>

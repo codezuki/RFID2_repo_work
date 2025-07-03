@@ -1,0 +1,179 @@
+﻿@page
+@model RFID2.Pages.Configuration.ParamConfigModel
+@{
+    ViewData["Title"] = "Parameter Configuration";
+}
+
+<h2 class="mb-4">🛠️ Parameter Configuration</h2>
+
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Dropdown + Add Button -->
+<div id="topSection" class="d-flex gap-3 mb-3 align-items-center">
+    <select class="form-select w-auto" id="typeFilter" onchange="loadParamsByType()">
+        <option value="">🔍 Select Param Type...</option>
+    </select>
+    <button class="btn btn-success" onclick="showAddForm()">➕ Add New</button>
+</div>
+
+<!-- Add New Param Form -->
+<div id="addSection" class="card p-3 mb-3 d-none">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Type</label>
+            <input id="newType" class="form-control" placeholder="e.g. AssetStatus">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Name</label>
+            <input id="newName" class="form-control" placeholder="e.g. Active">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Description</label>
+            <input id="newDesc" class="form-control" placeholder="Short description">
+        </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-primary" onclick="saveParam()">Save</button>
+        <button class="btn btn-outline-secondary" onclick="hideAddForm()">Cancel</button>
+    </div>
+</div>
+
+<!-- Param Grid -->
+<div id="gridSection" class="card p-3 d-none">
+    <h5 class="fw-bold mb-3">Values for <span id="selectedType"></span></h5>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="paramGridBody"></tbody>
+    </table>
+</div>
+
+<script>
+    let paramStore = [
+        { type: 'AssetStatus', name: 'Active', desc: 'Currently in use' },
+        { type: 'AssetStatus', name: 'Inactive', desc: 'Not in use' },
+        { type: 'OnboardingStatus', name: 'Initiated', desc: 'Process started' },
+        { type: 'OnboardingStatus', name: 'Completed', desc: 'Asset onboarded' },
+        { type: 'Custodian', name: 'John Doe', desc: 'IT admin' },
+        { type: 'Department', name: 'HR', desc: 'Human Resources' },
+        { type: 'AssetType', name: 'Laptop', desc: 'Portable computer' },
+        { type: 'AssetModel', name: 'Dell Latitude 7420', desc: 'High-performance laptop' },
+        { type: 'UserType', name: 'Employee', desc: 'Internal staff' },
+        { type: 'Role', name: 'Admin', desc: 'Full access' }
+    ];
+
+    function populateTypeDropdown() {
+        const uniqueTypes = [...new Set(paramStore.map(p => p.type))];
+        const dropdown = document.getElementById("typeFilter");
+        dropdown.innerHTML = `<option value="">🔍 Select Param Type...</option>`;
+        uniqueTypes.forEach(type => {
+            dropdown.innerHTML += `<option value="${type}">${type}</option>`;
+        });
+    }
+
+    function loadParamsByType() {
+        const type = document.getElementById("typeFilter").value;
+        const tbody = document.getElementById("paramGridBody");
+        const gridSection = document.getElementById("gridSection");
+        document.getElementById("selectedType").innerText = type;
+
+        if (!type) return (tbody.innerHTML = '', gridSection.classList.add("d-none"));
+
+        const params = paramStore.filter(p => p.type === type);
+        tbody.innerHTML = '';
+        params.forEach((p, index) => {
+            tbody.innerHTML += `
+                    <tr>
+                        <td><span id="name-${index}">${p.name}</span><input class='form-control d-none' id='edit-name-${index}' value='${p.name}'></td>
+                        <td><span id="desc-${index}">${p.desc}</span><input class='form-control d-none' id='edit-desc-${index}' value='${p.desc}'></td>
+                        <td>
+                            <button class='btn btn-sm btn-outline-primary' onclick='enableEdit(${index})'>Edit</button>
+                            <button class='btn btn-sm btn-success d-none' onclick='saveEdit(${index})' id='save-${index}'>Save</button>
+                            <button class='btn btn-sm btn-secondary d-none' onclick='cancelEdit(${index})' id='cancel-${index}'>Cancel</button>
+                        </td>
+                    </tr>`;
+        });
+        gridSection.classList.remove("d-none");
+    }
+
+    function enableEdit(index) {
+        document.getElementById(`name-${index}`).classList.add("d-none");
+        document.getElementById(`desc-${index}`).classList.add("d-none");
+        document.getElementById(`edit-name-${index}`).classList.remove("d-none");
+        document.getElementById(`edit-desc-${index}`).classList.remove("d-none");
+        document.getElementById(`save-${index}`).classList.remove("d-none");
+        document.getElementById(`cancel-${index}`).classList.remove("d-none");
+    }
+
+    function cancelEdit(index) {
+        document.getElementById(`name-${index}`).classList.remove("d-none");
+        document.getElementById(`desc-${index}`).classList.remove("d-none");
+        document.getElementById(`edit-name-${index}`).classList.add("d-none");
+        document.getElementById(`edit-desc-${index}`).classList.add("d-none");
+        document.getElementById(`save-${index}`).classList.add("d-none");
+        document.getElementById(`cancel-${index}`).classList.add("d-none");
+    }
+
+    function saveEdit(index) {
+        const type = document.getElementById("typeFilter").value;
+        const name = document.getElementById(`edit-name-${index}`).value;
+        const desc = document.getElementById(`edit-desc-${index}`).value;
+        const target = paramStore.filter(p => p.type === type)[index];
+        if (target) {
+            target.name = name;
+            target.desc = desc;
+            loadParamsByType();
+        }
+    }
+
+    function showAddForm() {
+        document.getElementById("addSection").classList.remove("d-none");
+        document.getElementById("topSection").classList.add("d-none");
+        document.getElementById("gridSection").classList.add("d-none");
+    }
+
+    function hideAddForm() {
+        document.getElementById("addSection").classList.add("d-none");
+        document.getElementById("topSection").classList.remove("d-none");
+    }
+
+    function saveParam() {
+        const type = document.getElementById("newType").value.trim();
+        const name = document.getElementById("newName").value.trim();
+        const desc = document.getElementById("newDesc").value.trim();
+
+        if (!type || !name) {
+            showToast("Type and Name are required", "danger");
+            return;
+        }
+
+        paramStore.push({ type, name, desc });
+        hideAddForm();
+        populateTypeDropdown();
+        document.getElementById("typeFilter").value = type;
+        loadParamsByType();
+        showToast("Parameter saved successfully!", "success");
+    }
+
+    window.onload = () => populateTypeDropdown();
+</script>
+<script>
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-bg-${type} border-0 show mb-2`;
+        toast.role = 'alert';
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>

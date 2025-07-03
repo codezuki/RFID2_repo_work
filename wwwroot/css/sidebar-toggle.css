@@ -1,0 +1,64 @@
+﻿/* Base sidebar styles */
+.sidebar {
+    width: 220px;
+    transition: transform 0.3s ease, visibility 0.3s ease;
+}
+
+    /* Collapse sidebar completely on desktop when toggled */
+    .sidebar.collapsed {
+        display: none !important;
+    }
+
+/* Mobile mode: hide sidebar unless toggled */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -220px;
+        height: 100%;
+        background-color: var(--bs-secondary-bg);
+        z-index: 1050;
+        transform: translateX(0);
+        transition: left 0.3s ease;
+    }
+
+        .sidebar.show-on-mobile {
+            left: 0;
+        }
+
+    .sidebar-backdrop {
+        display: none;
+    }
+
+        .sidebar-backdrop.active {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+        }
+}
+
+/* Optional: hide collapse arrow caret when collapsed */
+.sidebar .nav-link .caret {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+.sidebar .collapse.show ~ .nav-link .caret {
+    transform: rotate(180deg);
+}
+/* Hide toggle button on desktop */
+#sidebar-toggle {
+    display: none;
+}
+
+/* Show toggle button on small screens (mobile) */
+@media (max-width: 767.98px) {
+    #sidebar-toggle {
+        display: block !important;
+    }
+}

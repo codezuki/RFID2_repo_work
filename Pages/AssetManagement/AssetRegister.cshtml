@@ -1,0 +1,155 @@
+﻿@page
+@model RFID2.Pages.AssetManagment.AssetRegisterModel
+@{
+    ViewData["Title"] = "Asset Register";
+}
+
+<h4 class="mb-4">📋 Asset Register</h4>
+
+<form method="post">
+    <div class="row g-3">
+        <!-- Row 1 -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Asset ID <span class="text-danger">*</span></label>
+            <input class="form-control" value="TD2512959" disabled />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Asset Class <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>IT</option>
+                    <option>Non-IT</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Serial/Inventory No. <span class="text-danger">*</span></label>
+            <input class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 DCMC No <span class="text-danger">*</span></label>
+            <input class="form-control" />
+        </div>
+
+        <!-- Row 2 -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Asset Type <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>Laptop</option>
+                    <option>Desktop</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Asset Model <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>Dell</option>
+                    <option>HP</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📝 Description <span class="text-danger">*</span></label>
+            <input class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📝 Project Code <span class="text-danger">*</span></label>
+            <input class="form-control" />
+        </div>
+
+        <!-- Row 3 -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📅 Financial Year <span class="text-danger">*</span></label>
+            <input class="form-control" placeholder="2024-25" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📋 PO No <span class="text-danger">*</span></label>
+            <input class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📅 PO Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">💲 Asset Cost <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" />
+        </div>
+
+        <!-- Row 4 -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">🏢 Department <span class="text-danger">*</span></label>
+            <select class="form-select">
+                <option>Select</option>
+                <option>IT</option>
+                <option>HR</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">👤 Custodian Name <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>John</option>
+                    <option>Jane</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📍 Location <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>Chennai</option>
+                    <option>Bangalore</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">🏢 Floor <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>1</option>
+                    <option>2</option>
+                </select>
+                
+            </div>
+        </div>
+
+        <!-- Row 5 -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📦 Rack <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <select class="form-select">
+                    <option>Select</option>
+                    <option>Rack A</option>
+                    <option>Rack B</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">📅 Deployment Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">🏷️ Asset Tag</label>
+            <input class="form-control" />
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center gap-3">
+        <button type="submit" class="btn btn-success px-4">Save</button>
+        <a href="#" class="btn btn-danger px-4">Cancel</a>
+    </div>
+</form>

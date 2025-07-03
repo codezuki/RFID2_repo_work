@@ -1,0 +1,142 @@
+﻿@* <aside class="sidebar p-3 position-relative" style="background-color: var(--bs-secondary-bg); color: var(--bs-body-color); border-right: 1px solid var(--bs-border-color); min-height: 100vh;"> *@
+
+    <ul class="nav flex-column">
+       @*  <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#dashboardMenu" role="button" aria-expanded="false" aria-controls="dashboardMenu">
+                📊 Dashboards
+            </a>
+            <div class="collapse" id="dashboardMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/dashboard/asset" class="nav-link">Asset Dashboard</a></li>
+                    <li class="nav-item"><a href="/dashboard/rack" class="nav-link">Rack Dashboard</a></li>
+                </ul>
+            </div>
+        </li> *@
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#accessMenu">
+                🔐 Access Management
+            </a>
+            <div class="collapse" id="accessMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/role/role" class="nav-link">Role Access Control</a></li>
+                    <li class="nav-item"><a href="/employee/employee" class="nav-link">Employee List</a></li>
+                <li class="nav-item"><a href="/employee/user" class="nav-link">User Management</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#configMenu">
+                ⚙️ Configuration
+            </a>
+            <div class="collapse" id="configMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/configuration/paramconfig" class="nav-link">Params Config</a></li>
+             @*        <li class="nav-item"><a href="/config/asset-model" class="nav-link">Asset Model</a></li>
+                    <li class="nav-item"><a href="/config/asset-status" class="nav-link">Asset Status</a></li>
+                    <li class="nav-item"><a href="/config/department" class="nav-link">Department</a></li>
+                    <li class="nav-item"><a href="/config/user-type" class="nav-link">User Type</a></li>
+                    <li class="nav-item"><a href="/config/role" class="nav-link">Role</a></li>
+                    <li class="nav-item"><a href="/config/designations" class="nav-link">Designations</a></li>
+                    <li class="nav-item"><a href="/config/other-lists" class="nav-link">Other Static Lists</a></li> *@
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#locationMenu">
+                🏢 Location
+            </a>
+            <div class="collapse" id="locationMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/locationmanagement/location" class="nav-link">Location</a></li>
+                    <li class="nav-item"><a href="/locationmanagement/floor" class="nav-link">Floor</a></li>
+                    <li class="nav-item"><a href="/locationmanagement/rack" class="nav-link">Rack</a></li>
+                    <li class="nav-item"><a href="/rack-management" class="nav-link">Rack Management</a></li>
+                </ul>
+            </div>
+        </li>
+
+      @*   <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#assetMenu">
+                📦 Asset Management
+            </a>
+            <div class="collapse" id="assetMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/assetmanagment/assetregister" class="nav-link">Asset Register</a></li>
+                    <li class="nav-item"><a href="/assets/onboard" class="nav-link">Onboard Asset</a></li>
+                    <li class="nav-item"><a href="/assets/offboard" class="nav-link">Offboard Asset</a></li>
+                    <li class="nav-item"><a href="/assets/transfer" class="nav-link">Asset Transfer</a></li>
+                </ul>
+            </div>
+        </li> *@
+
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#assetMenu">
+                📦 Asset Management
+            </a>
+            <div class="collapse" id="assetMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/assetmanagement/assetregister" class="nav-link">Asset Register</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#onboardSubMenu" aria-expanded="false" aria-controls="onboardSubMenu">
+                            Onboard Asset
+                        </a>
+                        <div class="collapse" id="onboardSubMenu">
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a href="/assetmanagement/onboard/hardware" class="nav-link">Hardware Asset</a></li>
+                                <li class="nav-item"><a href="/assetmanagement/onboard/software" class="nav-link">Software Asset</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#offboardSubMenu" aria-expanded="false" aria-controls="offboardSubMenu">
+                            Offboard Asset
+                        </a>
+                        <div class="collapse" id="offboardSubMenu">
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a href="/assetmanagement/offboard/hardware" class="nav-link">Hardware Asset</a></li>
+                                <li class="nav-item"><a href="/assetmanagement/offboard/software" class="nav-link">Software Asset</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item"><a href="/assetmanagement/disposal" class="nav-link">Asset Dispose</a></li>
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu">
+                📄 Reports
+            </a>
+            <div class="collapse" id="reportsMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/reports/lda" class="nav-link">LDA Report</a></li>
+                    <li class="nav-item"><a href="/reports/by-custodian" class="nav-link">Asset by Custodian</a></li>
+                    <li class="nav-item"><a href="/reports/by-status" class="nav-link">Asset by Status</a></li>
+                    <li class="nav-item"><a href="/reports/inventory" class="nav-link">Asset Inventory</a></li>
+                    <li class="nav-item"><a href="/reports/position" class="nav-link">Asset UPosition</a></li>
+                    <li class="nav-item"><a href="/reports/export" class="nav-link">Export Options</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#logsMenu">
+                📚 Logs & Audits
+            </a>
+            <div class="collapse" id="logsMenu">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="/logs/user-activity" class="nav-link">User-wise Activity Log</a></li>
+                    <li class="nav-item"><a href="/logs/asset-history" class="nav-link">Track Full Asset History</a></li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+@* </aside> *@

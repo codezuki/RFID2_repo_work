@@ -1,0 +1,92 @@
+﻿
+
+@{
+    // Initial fallback, dynamic theme is applied via JS
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Themed App</title>
+    <link id="bootstrap-css" rel="stylesheet" href="~/lib/bootstrap/themes/zephyr/bootstrap.min.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme') || 'zephyr';
+            const updateTheme = () => {
+                const link = document.getElementById("bootstrap-css");
+                if (link) link.setAttribute('href', `/lib/bootstrap/themes/${theme}/bootstrap.min.css`);
+                const selector = document.getElementById("theme-selector");
+                if (selector) selector.value = theme;
+            };
+            document.addEventListener("DOMContentLoaded", updateTheme);
+        })();
+    </script>
+
+
+
+    @await Html.PartialAsync("_Topbar")
+
+    @* <div class="d-flex flex-grow-1 position-relative">
+        @await Html.PartialAsync("_Sidebar")
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <main class="content p-4 flex-fill">
+            @RenderBody()
+        </main>
+    </div> *@
+    <div class="d-flex" style="height: 100vh; overflow: hidden;">
+        <!-- Sidebar (themed) -->
+        <aside class="sidebar p-3" style="
+    width: 220px;
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-white);
+    /* color: var(--bs-body-color); */
+    border-right: 1px solid var(--bs-border-color);">
+            @await Html.PartialAsync("_Sidebar")
+        </aside>
+
+
+
+        @* <aside class="sidebar p-3" style="
+        width: 220px;
+        background-color: var(--bs-secondary-bg);
+        color: var(--bs-body-color);
+        border-right: 1px solid var(--bs-border-color); ">
+            @await Html.PartialAsync("_Sidebar")
+        </aside> *@
+
+        <!-- Main content (themed + scrollable) -->
+        <main class="content p-4 flex-fill overflow-auto" style="
+        height: 100vh;
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);">
+            @RenderBody()
+        </main>
+    </div>
+
+
+
+
+
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('theme-selector')?.addEventListener('change', function () {
+            const selected = this.value;
+            // document.getElementById("bootstrap-css").href = `/lib/bootstrap/themes/${selected}/bootstrap.min.css`;
+            localStorage.setItem('theme', selected);
+            window.location.reload(); // Reload to cleanly apply full theme
+        });
+    </script>
+
+    <script src="~/js/theme.js"></script>
+    @RenderSection("Scripts", required: false)
+   
+
+</body>
+</html>

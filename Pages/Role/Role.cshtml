@@ -1,0 +1,176 @@
+﻿@page
+@model RFID2.Pages.Role.RoleModel
+@{
+    ViewData["Title"] = "Role & Rights Management";
+}
+
+<div class="container mt-4">
+    <h4 class="mb-3">Role Management</h4>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toast" class="toast align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMsg"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="hideToast()"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role List Section -->
+    <div id="roleListSection">
+        <div class="text-end mb-3">
+            <button class="btn btn-primary" onclick="showAddRole()">➕ Add Role</button>
+        </div>
+        <div id="roleTableContainer"></div>
+    </div>
+
+    <!-- Add/Edit Role Section -->
+    <div id="roleFormSection" class="card p-3 d-none">
+        <h5 id="roleFormTitle">Add Role</h5>
+        <div class="mb-2">
+            <label>Role Name *</label>
+            <input id="roleName" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <label>Status *</label>
+            <select id="roleStatus" class="form-select">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Discontinued">Discontinued</option>
+            </select>
+        </div>
+        <div class="text-end">
+            <button class="btn btn-success" onclick="saveRole()">Save</button>
+            <button class="btn btn-secondary" onclick="cancelAddRole()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Rights Section -->
+    <div id="rightsSection" class="d-none mt-4">
+        <h5>Assign Rights to Role: <span id="rightsForRole"></span></h5>
+        <table class="table table-bordered mt-2">
+            <thead class="table-light">
+                <tr>
+                    <th>Menu Group</th><th>Menu</th><th>Insert</th><th>Update</th><th>View</th><th>Delete</th><th>Export</th><th>All</th>
+                </tr>
+            </thead>
+            <tbody id="rightsTable"></tbody>
+        </table>
+        <div class="text-end">
+            <button class="btn btn-success" onclick="saveRights()">Save Rights</button>
+            <button class="btn btn-secondary" onclick="cancelRights()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const roles = [
+    { id: 1, name: "Admin", status: "Active" },
+    { id: 2, name: "Auditor", status: "Inactive" }
+];
+const rights = [
+    { group: "User Management", menu: "Users" },
+    { group: "Asset Configuration", menu: "Custodian" },
+    { group: "Asset Configuration", menu: "Asset Model" },
+    { group: "Dashboard", menu: "Rack Dashboard" }
+];
+let editingRoleId = null;
+let rightsForRoleId = null;
+
+function showToast(message, success = true) {
+    const toast = document.getElementById("toast");
+    const msg = document.getElementById("toastMsg");
+    toast.classList.remove("text-bg-success", "text-bg-danger");
+    toast.classList.add(success ? "text-bg-success" : "text-bg-danger");
+    msg.innerText = message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+}
+function hideToast() {
+    document.getElementById("toast").classList.remove("show");
+}
+function renderRoles() {
+    const container = document.getElementById("roleTableContainer");
+    if (roles.length === 0) {
+        container.innerHTML = `<div class='alert alert-info'>No roles found.</div>`;
+        return;
+    }
+    let html = `<table class='table table-bordered'><thead class='table-light'>
+        <tr><th>#</th><th>Role</th><th>Status</th><th>Edit</th><th>Rights</th></tr></thead><tbody>`;
+    roles.forEach((r, i) => {
+        html += `<tr><td>${i + 1}</td><td>${r.name}</td><td>${r.status}</td>
+        <td><button class='btn btn-sm btn-warning' onclick='editRole(${r.id})'>✏️</button></td>
+        <td><button class='btn btn-sm btn-info' onclick='assignRights(${r.id})'>👁️</button></td></tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+function showAddRole() {
+    document.getElementById("roleFormSection").classList.remove("d-none");
+    document.getElementById("roleListSection").classList.add("d-none");
+    document.getElementById("roleFormTitle").innerText = "Add Role";
+    document.getElementById("roleName").value = "";
+    document.getElementById("roleStatus").value = "Active";
+    editingRoleId = null;
+}
+function cancelAddRole() {
+    document.getElementById("roleFormSection").classList.add("d-none");
+    document.getElementById("roleListSection").classList.remove("d-none");
+}
+function saveRole() {
+    const name = document.getElementById("roleName").value.trim();
+    const status = document.getElementById("roleStatus").value;
+    if (!name) return showToast("Role name required", false);
+    if (editingRoleId) {
+        const role = roles.find(r => r.id === editingRoleId);
+        role.name = name;
+        role.status = status;
+        showToast("Role updated");
+    } else {
+        roles.push({ id: Date.now(), name, status });
+        showToast("Role added");
+    }
+    cancelAddRole();
+    renderRoles();
+}
+function editRole(id) {
+    const role = roles.find(r => r.id === id);
+    editingRoleId = id;
+    document.getElementById("roleName").value = role.name;
+    document.getElementById("roleStatus").value = role.status;
+    document.getElementById("roleFormTitle").innerText = "Edit Role";
+    document.getElementById("roleFormSection").classList.remove("d-none");
+    document.getElementById("roleListSection").classList.add("d-none");
+}
+function assignRights(roleId) {
+    rightsForRoleId = roleId;
+    const role = roles.find(r => r.id === roleId);
+    document.getElementById("rightsForRole").innerText = role.name;
+    document.getElementById("rightsSection").classList.remove("d-none");
+    document.getElementById("roleListSection").classList.add("d-none");
+
+    let html = "";
+    rights.forEach(r => {
+        html += `<tr><td>${r.group}</td><td>${r.menu}</td>
+            <td><input type='checkbox'/></td>
+            <td><input type='checkbox'/></td>
+            <td><input type='checkbox'/></td>
+            <td><input type='checkbox'/></td>
+            <td><input type='checkbox'/></td>
+            <td><input type='checkbox'/></td>
+        </tr>`;
+    });
+    document.getElementById("rightsTable").innerHTML = html;
+}
+function cancelRights() {
+    document.getElementById("rightsSection").classList.add("d-none");
+    document.getElementById("roleListSection").classList.remove("d-none");
+}
+function saveRights() {
+    showToast("Rights saved for role");
+    cancelRights();
+}
+
+renderRoles();
+</script>
