@@ -3,6 +3,36 @@
 @{
     ViewData["Title"] = "Locations";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-auto-hide fixed bottom-4 right-4 z-50 w-80 rounded-2xl border border-green-300 bg-white p-4 shadow-xl transition-all">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 rounded-full bg-green-100 p-2 text-green-600">
+                ✅
+            </div>
+            <div class="ml-3 text-sm text-gray-800">
+                @TempData["SuccessMessage"]
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-auto-hide fixed bottom-4 right-4 z-50 w-80 rounded-2xl border border-red-300 bg-white p-4 shadow-xl transition-all">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 rounded-full bg-red-100 p-2 text-red-600">
+                ❌
+            </div>
+            <div class="ml-3 text-sm text-gray-800">
+                @TempData["ErrorMessage"]
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+    </div>
+}
+
 
 <h3>Location</h3>
 
@@ -25,20 +55,26 @@
     <thead class="table-light">
         <tr>
             <th>Location Name</th>
+            <th>View Details</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
-        <tr>
+        @* <tr>
             <th><input type="text" placeholder="Search Name" /></th>
             <th></th>
             <th></th>
-        </tr>
+        </tr> *@
     </thead>
     <tbody>
         @foreach (var loc in Model.Locations)
         {
             <tr>
                 <td>@loc.LocationName</td>
+                <td>
+                    <button class="text-sm rounded-md bg-blue-100 px-3 py-1.5 text-blue-600 hover:bg-blue-200 transition">
+                        👁️
+                    </button>
+                </td>
                 <td><button class="btn btn-warning btn-sm">✏️</button></td>
                 <td><button class="btn btn-danger btn-sm">❌</button></td>
             </tr>
@@ -50,14 +86,21 @@
     <script>
          function showLocationForm() { document.getElementById("locationForm").classList.remove("d-none"); }
         function hideLocationForm() { document.getElementById("locationForm").classList.add("d-none"); }
-        function saveLocation() {
-            const name = document.getElementById("locationName").value.trim();
-            if (!name) return alert("Location required");
-            locations.push(name);
-            renderLocations();
-            hideLocationForm();
-            alert("Location saved");
-        }
+      
+        setTimeout(() => {
+            document.querySelectorAll('.alert-auto-hide')?.forEach(el => el.remove());
+        }, 4000); // Hide after 4 seconds
+    
+        
+        
+        // function saveLocation() {
+        //     const name = document.getElementById("locationName").value.trim();
+        //     if (!name) return alert("Location required");
+        //     locations.push(name);
+        //     renderLocations();
+        //     hideLocationForm();
+        //     alert("Location saved");
+        // }
         </script>
        
     <partial name="_DataTableScript" />

@@ -4,18 +4,18 @@ namespace RFID2.Pages.Utils
 {
     public class DbConnection
     {
-      
-       
-            public static string ConnectionString { get; private set; }
 
-            public static void Init(IConfiguration config)
+
+        private static string _connectionString;
+
+        public static void Init(IConfiguration config)
             {
-                ConnectionString = config.GetConnectionString("GIC_Local_DB");
+            _connectionString = config.GetConnectionString("GIC_Local_DB");
             }
 
             public static SqlConnection GetConnection()
             {
-                return new SqlConnection(ConnectionString);
+                return new SqlConnection(_connectionString);
             }
             
     }
