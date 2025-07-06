@@ -8,7 +8,7 @@ namespace RFID2.Pages.LocationManagement
 {
     public class LocationModel : PageModel
     {
-        public List<LocationDto> Locations { get; set; } = new();
+        public List<LocationGetDto> Locations { get; set; } = new();
 
    
         public class LocationDto
@@ -55,8 +55,8 @@ namespace RFID2.Pages.LocationManagement
             using var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                Locations.Add(new LocationDto
-                {                                                                                                                                                                                   
+                Locations.Add(new LocationGetDto
+                {   LOCATION_ID= Convert.ToInt32(rdr["LocationID"].ToString()),
                     LocationName = rdr["LocationName"].ToString()
                 });
             }
@@ -119,6 +119,31 @@ namespace RFID2.Pages.LocationManagement
             }
 
 
+        }
+        [BindProperty]
+        public int LocationId { get; set; }
+        public async Task<IActionResult> OnPostDeleteAsync()
+        {
+            try
+            {
+                using (var conn = DbConnection.GetConnection())
+                using (var cmd = new SqlCommand("GIC_LOCATION_TRANS", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Mode", "DELETE");
+                    cmd.Parameters.AddWithValue("@LocationId", LocationId); // Or: Request.Form["LocationId"]
+                    await conn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                TempData["SuccessMessage"] = "Location deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Delete failed: " + ex.Message;
+            }
+
+            return RedirectToPage();
         }
     }
 }
