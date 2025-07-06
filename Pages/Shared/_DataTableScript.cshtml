@@ -1,0 +1,33 @@
+﻿<link rel="stylesheet" href="~/lib/datatables/jquery.dataTables.min.css" />
+<script src="~/lib/datatables/jquery-3.7.1.min.js"></script>
+<script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+
+<script>
+        $(document).ready(function () {
+        $('.dataTable').DataTable();
+    });
+    $(document).ready(function () {
+        $('table.display').each(function () {
+            const table = $(this).DataTable({
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                dom: 'lrtip'
+            });
+
+            // Column filters
+             $('.dataTable thead tr:eq(1) th').each(function (i) {
+        $('input', this).on('keyup change', function () {
+            table.column(i).search(this.value).draw();
+        });
+    }); 
+            // const filterRow = $(this).find('thead tr:eq(1) th');
+            // filterRow.each(function (i) {
+            //     $('input', this).on('keyup change', function () {
+            //         if (table.column(i).search() !== this.value) {
+            //             table.column(i).search(this.value).draw();
+            //         }
+            //     });
+            // });
+        });
+    });
+</script>
