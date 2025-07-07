@@ -29,7 +29,7 @@ else if (TempData["ErrorMessage"] != null)
 
 <h3>Location</h3>
 
-<form method="post">
+
    @*  <div class="mb-3 text-end">
         <button type="button" class="btn btn-primary" onclick="showLocationForm()">Add New Location</button>
     </div> *@
@@ -42,8 +42,8 @@ else if (TempData["ErrorMessage"] != null)
             <div class="mb-2">
                 <label for="LocationName" class="block text-sm font-medium text-gray-700">Location Name *</label>
                 <input type="text" id="LocationName" name="LocationName" class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-                <button type="submit" class="rounded bg-green-600 px-4 py-2 text-green hover:bg-green-700">💾 Save</button>
-                <button type="button" class="rounded bg-gray-300 px-4 py-2 text-black hover:bg-gray-400" onclick="resetForm()">❌ Cancel</button>
+                <button type="submit" class="btn btn-primary">💾 Save</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">❌ Cancel</button>
             </div>
 
             <div class="flex justify-end gap-2 mt-4">
@@ -88,7 +88,7 @@ else if (TempData["ErrorMessage"] != null)
             <button type="button" class="btn btn-danger" onclick="hideLocationForm()">Cancel</button>
         </div>
     </div> *@
-</form>
+
 
 <table class="min-w-full divide-y divide-gray-200 table table-bordered dataTable mt-6">
     <thead class="table-light">
@@ -116,9 +116,11 @@ else if (TempData["ErrorMessage"] != null)
                     <button type="button" class="text-yellow-500 hover:text-yellow-700" title="Edit" onclick='fillForm(@loc.LOCATION_ID, "@loc.LocationName")'>✏️</button>
                    @*  <button type="button" class="text-red-500 hover:text-red-700" title="Delete">🗑️</button> *@
                 </td>
-                   <td class="px-4 py-2 flex gap-2">
-                    <button class="btn btn-danger btn-sm" onclick="openLocationForm('delete', @loc.LOCATION_ID, '@loc.LocationName')">🗑️</button>
-               </td>
+                <td class="px-4 py-2 flex gap-2">
+                    <button type="button" class="text-red-500 hover:text-red-700" onclick="submitDelete( @loc.LOCATION_ID)" title="Delete">
+                        🗑️
+                    </button>
+                </td>
             </tr>
         }
       @*   @foreach (var loc in Model.Locations)
@@ -136,20 +138,14 @@ else if (TempData["ErrorMessage"] != null)
         } *@
     </tbody>
 </table>
-
+<form id="deleteForm" method="post" asp-page-handler="Delete">
+    <input type="hidden" name="LocationId" id="deleteLocationId" />
+</form>
 @section Scripts {
     <script>
-        function submitDelete() {
-            const form = document.querySelector("form");
-
-            // Add hidden handler
-            const actionInput = document.createElement("input");
-            actionInput.setAttribute("type", "hidden");
-            actionInput.setAttribute("name", "handler");
-            actionInput.setAttribute("value", "Delete");
-            form.appendChild(actionInput);
-
-            form.submit();
+        function submitDelete(locationId) {
+            document.getElementById("deleteLocationId").value = locationId;
+            document.getElementById("deleteForm").submit();
         }
     </script>
     <script>
@@ -162,13 +158,15 @@ else if (TempData["ErrorMessage"] != null)
             document.getElementById("LocationName").value = name;
 
             // Clear previous highlights
-            document.querySelectorAll("#locationTable tbody tr").forEach(row => {
-                row.classList.remove("bg-yellow-100");
-            });
+            document.getElementById("saveButton").innerText = "💾 Update";
 
-            // Highlight selected row
-            const row = document.getElementById("row_" + id);
-            if (row) row.classList.add("bg-yellow-100");
+        // Set correct form action to Update
+        document.getElementById("locationForm").setAttribute("action", "?handler=Update");
+
+        // Highlight row
+        document.querySelectorAll("tbody tr").forEach(row => row.classList.remove("bg-yellow-100"));
+        const row = document.getElementById("row_" + id);
+        if (row) row.classList.add("bg-yellow-100");
         }
 
         function resetForm() {
