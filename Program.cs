@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RFID2.Pages.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 DbConnection.Init(builder.Configuration);
 builder.Services.AddRazorPages();
-
+//EfCore 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("GIC_Local_DB")));
 
 var app = builder.Build();
 

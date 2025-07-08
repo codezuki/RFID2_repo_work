@@ -37,12 +37,16 @@ else if (TempData["ErrorMessage"] != null)
         <h4 class="text-lg font-semibold mb-2">Add / Edit Location</h4>
 
         <form method="post" id="locationForm">
-            <input type="hidden" name="LOCATION_ID" id="LOCATION_ID" />
+        <input type="hidden" name="UpdateRequest.LOCATION_ID" id="LocationID" />
+        
 
+        <!-- UserBy (hidden or prefilled) -->
+        <input type="hidden" name="UpdateRequest.UserBy" id="UserBy" value="1" />
+     @*    <input type="hidden" name="UpdateRequest.UserBy" id="LocationID" /> *@
             <div class="mb-2">
                 <label for="LocationName" class="block text-sm font-medium text-gray-700">Location Name *</label>
                 <input type="text" id="LocationName" name="LocationName" class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-                <button type="submit" class="btn btn-primary">💾 Save</button>
+            <button type="submit" id="saveButton" class="btn btn-primary">💾 Save</button>
                 <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">❌ Cancel</button>
             </div>
 
@@ -64,7 +68,7 @@ else if (TempData["ErrorMessage"] != null)
         Label = "",
         Type = "hidden",
         Name = "LocationId",
-        Id = "LOCATION_ID",
+        Id = "LocationID",
         Value = "",
         Disabled = false
         },
@@ -94,7 +98,7 @@ else if (TempData["ErrorMessage"] != null)
     <thead class="table-light">
         <tr>
             <th>Location Name</th>
-            <th>Actions</th>
+            @* <th>Actions</th> *@
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -107,17 +111,17 @@ else if (TempData["ErrorMessage"] != null)
     <tbody>
         @foreach (var loc in Model.Locations)
         {
-            <tr class="hover:bg-gray-100 transition" id="row_@loc.LOCATION_ID">
+            <tr class="hover:bg-gray-100 transition" id="row_@loc.LocationID">
                 <td class="px-4 py-2">@loc.LocationName</td>
-                <td class="px-4 py-2 flex gap-2">
-                    <button type="button" class="text-blue-500 hover:text-blue-700" title="View">👁️</button>
-                </td>
+                @* <td class="px-4 py-2 flex gap-2">
+                    <button type="button" class="btn btn-sm btn-info" title="View">👁️</button>
+                </td> *@
                     <td class="px-4 py-2 flex gap-2">
-                    <button type="button" class="text-yellow-500 hover:text-yellow-700" title="Edit" onclick='fillForm(@loc.LOCATION_ID, "@loc.LocationName")'>✏️</button>
+                    <button type="button"  class="btn btn-sm btn-warning" title="Edit" onclick='fillForm(@loc.LocationID, "@loc.LocationName")'>✏️</button>
                    @*  <button type="button" class="text-red-500 hover:text-red-700" title="Delete">🗑️</button> *@
                 </td>
                 <td class="px-4 py-2 flex gap-2">
-                    <button type="button" class="text-red-500 hover:text-red-700" onclick="submitDelete( @loc.LOCATION_ID)" title="Delete">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="if(confirm('Are you sure you want to delete this item?')) submitDelete( @loc.LocationID)" title="Delete">
                         🗑️
                     </button>
                 </td>
@@ -154,7 +158,7 @@ else if (TempData["ErrorMessage"] != null)
             document.getElementById("formContainer").classList.remove("hidden");
 
             // Set form values
-            document.getElementById("LOCATION_ID").value = id;
+            document.getElementById("LocationID").value = id;
             document.getElementById("LocationName").value = name;
 
             // Clear previous highlights
@@ -171,9 +175,10 @@ else if (TempData["ErrorMessage"] != null)
 
         function resetForm() {
             // Clear fields
-            document.getElementById("LOCATION_ID").value = "";
+            document.getElementById("LocationID").value = "";
             document.getElementById("LocationName").value = "";
-
+             document.getElementById("saveButton").innerText = "💾 Save";
+             document.getElementById("locationForm").setAttribute("action", "?handler=post");
             // Hide form
             document.getElementById("formContainer").classList.add("hidden");
 
